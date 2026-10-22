@@ -41,8 +41,8 @@ def test_generate_password_success(
         (0, "at least"),
         (4, "at least"),
         (7, "at least"),
-        (129, "maximun"),
-        (400, "maximun"),
+        (129, "maximum"),
+        (400, "maximum"),
     ],
 )
 def test_generate_password_invalid_length(invalid_length, error_match):
@@ -163,7 +163,7 @@ def test_calculate_entropy_concrete_values():
     assert entropy_filtered < entropy_normal
 
 
-@pytest.mark.parametrize("invalid_length", [0, -5, 2])
+@pytest.mark.parametrize("invalid_length", [0, -1, -5])
 def test_calculate_entropy_invalid_length_returns_zero(invalid_length: int):
     result = calculate_entropy(length=invalid_length)
     assert result == 0.0
