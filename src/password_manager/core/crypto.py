@@ -14,21 +14,24 @@ NONCE_SIZE = 12
 KEY_SIZE = 32
 
 
-# Parameters configuration for the Argon2id Key Derivation Function (secure production defaults).
 @dataclass(frozen=True)
 class KDFParameters:
+    """Parameters configuration for the Argon2id Key Derivation Function (secure production defaults).
+    
+    Note: memory_cost is specified in KiB (e.g., 65536 KiB = 64 MiB).
+    """
     time_cost: int = 2
     memory_cost: int = 65536
     parallelism: int = 1
 
 
-# Generates a cryptographically secure random salt of SALT_SIZE bytes
 def generate_salt() -> bytes:
+    """Generates a cryptographically secure random salt of SALT_SIZE bytes."""
     return os.urandom(SALT_SIZE)
 
 
-# Derives a secure cryptographic key from a master password using Argon2id."
 def derive_key(password: str, salt: bytes, kdf_parameters: KDFParameters) -> bytes:
+    """Derives a secure cryptographic key from a master password using Argon2id."""
     if not password:
         raise ValueError("The password cannot be empty.")
 
@@ -50,9 +53,11 @@ def derive_key(password: str, salt: bytes, kdf_parameters: KDFParameters) -> byt
     return hash_bytes
 
 
-# Encrypts content using AES-GCM and returns a unique nonce alongside the ciphertext.
-# Note: The returned encrypted_data includes the 16-byte authentication tag appended at the end.
 def encrypt(key: bytes, content: bytes, associated_data: bytes) -> tuple[bytes, bytes]:
+    """Encrypts content using AES-GCM and returns a unique nonce alongside the ciphertext.
+
+    Note: The returned encrypted_data includes the 16-byte authentication tag appended at the end.
+    """
     if len(key) != KEY_SIZE:
         raise ValueError(f"The key must be exactly {KEY_SIZE} bytes")
 
@@ -63,8 +68,8 @@ def encrypt(key: bytes, content: bytes, associated_data: bytes) -> tuple[bytes, 
     return nonce, encrypted_data
 
 
-# Decrypts AES-GCM ciphertext, mapping cryptographic and storage failures to domain errors.
-def decrypt(key: bytes, nonce: bytes, encrypted_content: bytes, associated_data: bytes):
+def decrypt(key: bytes, nonce: bytes, encrypted_content: bytes, associated_data: bytes) -> bytes:
+    """Decrypts AES-GCM ciphertext, mapping cryptographic failures to domain errors."""
     if len(key) != KEY_SIZE:
         raise ValueError(f"The key must be exactly {KEY_SIZE} bytes")
 
